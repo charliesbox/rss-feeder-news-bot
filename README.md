@@ -94,6 +94,7 @@ python main.py
 ## Roadmap
 
 - Add more news agencies
+- English interface support
 - Save favorite articles
 - Improve article formatting
 - Optional article translation
