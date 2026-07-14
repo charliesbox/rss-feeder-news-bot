@@ -17,18 +17,12 @@ def parse_departments(agency):
     deps = []
     for feed in dir(feeds):
         if feed.startswith(f'url_{agency}'):
-            newsfeed = feedparser.parse(getattr(feeds, feed))
-            if agency == 'bbc':
-                deps.append(newsfeed.feed.description)
-            else:
-                deps.append(newsfeed.feed.title)
-        else:
-            pass
+            deps.append(getattr(feeds, feed)[0])
     return deps
         
 
 def parse_titles(agency, number):
-    newsfeed = feedparser.parse(getattr(feeds, f'url_{agency}_{number}'))
+    newsfeed = feedparser.parse(getattr(feeds, f'url_{agency}_{number}')[1])
     news_titles = []
     for news in newsfeed.entries[0:999]:
         # this if-else is made for some bbc articles, as their titles might contain unclear info
@@ -40,7 +34,7 @@ def parse_titles(agency, number):
 
 
 def fetch_news(agency, number, index):
-    newsfeed = feedparser.parse(getattr(feeds, f'url_{agency}_{number}'))
+    newsfeed = feedparser.parse(getattr(feeds, f'url_{agency}_{number}')[1])
     newstext = (
         f'{newsfeed.entries[index].title}\n\n'
         f'{newsfeed.entries[index].description}\n\n'
