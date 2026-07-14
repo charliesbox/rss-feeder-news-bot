@@ -30,8 +30,12 @@ def parse_departments(agency):
 def parse_titles(agency, number):
     newsfeed = feedparser.parse(getattr(feeds, f'url_{agency}_{number}'))
     news_titles = []
-    for news in newsfeed.entries[0:20]:
-        news_titles.append(news.title)
+    for news in newsfeed.entries[0:999]:
+        # this if-else is made for some bbc articles, as their titles might contain unclear info
+        if news.title.lower() == 'tech life' or news.title.lower() == 'tech now':
+            news_titles.append(news.description)
+        else:
+            news_titles.append(news.title)
     return news_titles
 
 
