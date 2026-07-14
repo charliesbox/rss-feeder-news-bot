@@ -3,6 +3,7 @@ from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters.command import CommandStart, Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.exceptions import TelegramBadRequest
 import keyboards as kb
 from rssfeeder import *
 
@@ -36,10 +37,13 @@ async def departments_kb(callback: CallbackQuery):
     for index, dep in enumerate(deps):
         builder.button(text=dep, callback_data=f'titles_{agency}_{index}')
     builder.adjust(2)
-    await callback.message.answer(
-        text = 'выберите раздел',
-        reply_markup=builder.as_markup()
-    )
+    try:
+        await callback.message.edit_text(
+            text = 'выберите раздел',
+            reply_markup=builder.as_markup()
+        )
+    except TelegramBadRequest:
+        pass
     await callback.answer()
 
 
@@ -52,10 +56,13 @@ async def titles_kb(callback: CallbackQuery):
     for index, title in enumerate(titles):
         builder.button(text=title, callback_data=f'fetch_{agency}_{number}_{index}')
     builder.adjust(1)
-    await callback.message.answer(
-        text='что хотите почитать?',
-        reply_markup=builder.as_markup()
+    try:
+        await callback.message.edit_text(
+            text='что хотите почитать?',
+            reply_markup=builder.as_markup()
     )
+    except TelegramBadRequest:
+        pass
     await callback.answer()
 
 @user.callback_query(F.data.startswith('fetch_'))
@@ -64,5 +71,10 @@ async def get_news(callback: CallbackQuery):
     number = callback.data.split('_')[2]
     index = int(callback.data.split('_')[3])
     newstext = fetch_news(agency, number, index)
-    await callback.message.answer(newstext)
+    try:
+        await callback.message.edit_text(
+            text=newstext
+        )
+    except TelegramBadRequest:
+        pass
     await callback.answer()
