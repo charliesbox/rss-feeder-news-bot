@@ -23,7 +23,7 @@ Each RSS feed is registered once with its news agency and department. The bot au
 
 - Generates the list of available news agencies
 - Generates department menus
-- Generates a list of lates news titles
+- Generates a list of latest news titles
 - Fetches the requested RSS feed
 - Displays the latest articles with links to the original publication
 
