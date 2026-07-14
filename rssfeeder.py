@@ -18,7 +18,10 @@ def parse_departments(agency):
     for feed in dir(feeds):
         if feed.startswith(f'url_{agency}'):
             newsfeed = feedparser.parse(getattr(feeds, feed))
-            deps.append(newsfeed.feed.title)
+            if agency == 'bbc':
+                deps.append(newsfeed.feed.description)
+            else:
+                deps.append(newsfeed.feed.title)
         else:
             pass
     return deps

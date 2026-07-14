@@ -21,6 +21,7 @@ async def agencies_kb(message: Message):
     builder = InlineKeyboardBuilder()
     for agency in agencies:
         builder.button(text=agency.upper(), callback_data=f'agency_{agency}')
+    builder.adjust(1)
     await message.answer(
         text='выберите агентство',
         reply_markup=builder.as_markup()

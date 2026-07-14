@@ -14,3 +14,16 @@ url_nyt_7 = 'https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml'
 url_nyt_8 = 'https://rss.nytimes.com/services/xml/rss/nyt/MediaandAdvertising.xml'
     # TECHLONOGY
 url_nyt_9 = 'https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml'
+
+# BBC
+url_bbc_0 = 'https://feeds.bbci.co.uk/news/rss.xml'
+    # WORLD
+url_bbc_1 = 'https://feeds.bbci.co.uk/news/world/rss.xml'
+url_bbc_2 = 'https://feeds.bbci.co.uk/news/uk/rss.xml'
+url_bbc_3 = 'https://feeds.bbci.co.uk/news/business/rss.xml'
+url_bbc_4 = 'https://feeds.bbci.co.uk/news/politics/rss.xml'
+url_bbc_5 = 'https://feeds.bbci.co.uk/news/health/rss.xml'
+url_bbc_6 = 'https://feeds.bbci.co.uk/news/education/rss.xml'
+url_bbc_7 = 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml'
+url_bbc_8 = 'https://feeds.bbci.co.uk/news/technology/rss.xml'
+url_bbc_9 = 'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml'
