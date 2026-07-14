@@ -8,7 +8,10 @@ load_dotenv()
 
 async def main():
     PROXY_URL = os.getenv('PROXY_URL')
-    session = AiohttpSession(proxy=PROXY_URL)
+    if PROXY_URL:
+        session = AiohttpSession(proxy=PROXY_URL)
+    else:
+        session = AiohttpSession()
     bot = Bot(token=os.getenv('BOT_TOKEN'), session=session)
     dp = Dispatcher()
     dp.include_router(user)

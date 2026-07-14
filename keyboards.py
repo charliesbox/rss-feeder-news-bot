@@ -8,10 +8,3 @@ mainmenu = ReplyKeyboardMarkup(
     resize_keyboard=True,
     input_field_placeholder='это все равно тест'
 )
-
-newsmenu = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text='BBC', callback_data='news_bbc')],
-        [InlineKeyboardButton(text='NYT', callback_data='news_nyt')]
-    ]
-)
