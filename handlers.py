@@ -12,7 +12,9 @@ user = Router()
 
 @user.message(CommandStart())
 async def cmd_start(message: Message):
-    await message.answer('опять думскроллишь?',
+    await message.answer(f'привет! это тестовая версия моего бота-новостника\n'
+                         'если вы из приемной комиссии МАИ, можете написать мне! @sbeu_bulka\n'
+                         'чтобы начать, используй кнопку "Читать новости"',
                          reply_markup=kb.mainmenu)
 
 
