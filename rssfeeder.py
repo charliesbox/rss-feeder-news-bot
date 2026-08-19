@@ -21,8 +21,9 @@ def parse_departments(agency):
     return deps
         
 
-def parse_titles(agency, number):
-    newsfeed = feedparser.parse(getattr(feeds, f'url_{agency}_{number}')[1])
+async def parse_titles(agency, number):
+    feed_url = getattr(feeds, f'url_{agency}_{number}')[1]
+    newsfeed = await asyncio.to_thread(feedparser.parse, feed_url)
     news_titles = []
     for news in newsfeed.entries[0:999]:
         # this if-else is made for some bbc articles, as their titles might contain unclear info
@@ -33,8 +34,9 @@ def parse_titles(agency, number):
     return news_titles
 
 
-def fetch_news(agency, number, index):
-    newsfeed = feedparser.parse(getattr(feeds, f'url_{agency}_{number}')[1])
+async def fetch_news(agency, number, index):
+    news_url = getattr(feeds, f'url_{agency}_{number}')[1]
+    newsfeed = await asyncio.to_thread(feedparser.parse, news_url)
     newstext = (
         f'{newsfeed.entries[index].title}\n\n'
         f'{newsfeed.entries[index].description}\n\n'
