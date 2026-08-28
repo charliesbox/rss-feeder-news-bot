@@ -1,5 +1,14 @@
-import feedparser, asyncio
-import feeds
+import asyncio, psycopg, feeds
+from psycopg.rows import dict_row
+
+
+connection = psycopg.connect(
+    host = 'localhost',
+    dbname = 'postgres',
+    user = 'postgres',
+    password = 1234,
+    port = 5432
+)
 
 
 def parse_agencies():
@@ -21,26 +30,30 @@ def parse_departments(agency):
     return deps
         
 
-async def parse_titles(agency, number):
-    feed_url = getattr(feeds, f'url_{agency}_{number}')[1]
-    newsfeed = await asyncio.to_thread(feedparser.parse, feed_url)
-    news_titles = []
-    for news in newsfeed.entries[0:999]:
-        # this if-else is made for some bbc articles, as their titles might contain unclear info
-        if news.title.lower() == 'tech life' or news.title.lower() == 'tech now':
-            news_titles.append(news.description)
-        else:
-            news_titles.append(news.title)
-    return news_titles
+def parse_titles(agency, number):
+    department = getattr(feeds, f'url_{agency}_{number}')[0]
+    with connection.cursor() as cursor:
+        query = """
+            SELECT id, title FROM news WHERE agency = %s AND department = %s
+        """
+        cursor.execute(query, (agency, department))
+
+        titles = cursor.fetchall()
+        return titles
 
 
-async def fetch_news(agency, number, index):
-    news_url = getattr(feeds, f'url_{agency}_{number}')[1]
-    newsfeed = await asyncio.to_thread(feedparser.parse, news_url)
+def fetch_news(agency, news_id):
+    with connection.cursor(row_factory=dict_row) as cursor:
+        news_query = """
+            SELECT title, description, pub_date, url FROM news WHERE id = %s
+        """
+        cursor.execute(news_query, (news_id,))
+        rows = cursor.fetchall()
+        row = rows[0]
     newstext = (
-        f'{newsfeed.entries[index].title}\n\n'
-        f'{newsfeed.entries[index].description}\n\n'
-        f'Опубликовано: {newsfeed.entries[index].published}\n'
-        f'Читать на {agency.upper()}: {newsfeed.entries[index].link}'
+        f'{row['title']}\n\n'
+        f'{row['description']}\n\n'
+        f'Опубликовано: {row['pub_date']}\n'
+        f'Читать на {agency.upper()}: {row['url']}'
     )
-    return(newstext)
+    return newstext
