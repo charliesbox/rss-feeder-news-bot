@@ -5,7 +5,7 @@ from aiogram.filters.command import CommandStart, Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.exceptions import TelegramBadRequest
 import keyboards as kb
-from rssfeeder import parse_agencies, parse_departments, parse_titles, fetch_news
+from rssfeeder import *
 
 user = Router()
 
@@ -38,12 +38,12 @@ async def agencies_kb(message: Message):
 @user.callback_query(F.data.startswith('agency_'))
 async def departments_kb(callback: CallbackQuery):
     agency = callback.data.split('_')[1]
-    
+
     deps = parse_departments(agency)
 
     builder = InlineKeyboardBuilder()
-    for index, dep in enumerate(deps):
-        builder.button(text=dep, callback_data=f'titles_{agency}_{index}_1')
+    for dep_index, dep in enumerate(deps):
+        builder.button(text=dep, callback_data=f'titles_{agency}_{dep_index}_1')
     builder.adjust(2)
 
     try:
@@ -61,19 +61,21 @@ async def departments_kb(callback: CallbackQuery):
 @user.callback_query(F.data.startswith('titles_'))
 async def titles_kb(callback: CallbackQuery):
     agency = callback.data.split('_')[1]
-    number = int(callback.data.split('_')[2])
-    page_offset = int(callback.data.split('_')[3]) * 5    #this '* 5' can customize the amount of titles in one page
-
-    titles = await parse_titles(agency, number)
+    dep_index = int(callback.data.split('_')[2])
+    page_offset = int(callback.data.split('_')[3]) * 5      # this * 5 can customize the amount
+                                                            # of titles on one page
+    titles = parse_titles(agency, dep_index)
 
     builder = InlineKeyboardBuilder()
-    for index, title in enumerate(titles[page_offset-5:page_offset]):
-        builder.button(text=title, callback_data=f'fetch_{agency}_{number}_{index}')
+    for title in titles[page_offset-5:page_offset]:
+        builder.button(text=title[1], callback_data=f'fetch_{agency}_{title[0]}')
     if page_offset < len(titles):
-        builder.button(text='следующая страница', callback_data=f'titles_{agency}_{number}_{(page_offset // 5) + 1}')    #if you're customizing the amount of news in one page,
-    if page_offset - 5 > 0:                                                                                              #make sure to change the respective number here too
-        builder.button(text='предыдущая страница', callback_data=f'titles_{agency}_{number}_{(page_offset // 5) - 1}')
-    builder.adjust(1)
+        builder.button(text='следующая страница',
+                    callback_data=f'titles_{agency}_{dep_index}_{(page_offset // 5) + 1}') #if you're customizing
+    if page_offset - 5 > 0:                                       #the amount of titles on one page, make sure to
+        builder.button(text='предыдущая страница',                #change the respective numbers here too
+                       callback_data=f'titles_{agency}_{dep_index}_{(page_offset // 5) - 1}')
+    builder.adjust(1)                                            
 
     try:
         await callback.message.edit_text(
@@ -90,10 +92,9 @@ async def titles_kb(callback: CallbackQuery):
 @user.callback_query(F.data.startswith('fetch_'))
 async def get_news(callback: CallbackQuery):
     agency = callback.data.split('_')[1]
-    number = callback.data.split('_')[2]
-    index = int(callback.data.split('_')[3])
+    news_id = callback.data.split('_')[2]
 
-    newstext = await fetch_news(agency, number, index)
+    newstext = fetch_news(agency, news_id)
 
     try:
         await callback.message.edit_text(
