@@ -6,6 +6,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.exceptions import TelegramBadRequest
 import keyboards as kb
 from rssfeeder import *
+from config import NEWS_PER_PAGE
 
 user = Router()
 
@@ -43,7 +44,7 @@ async def departments_kb(callback: CallbackQuery):
 
     builder = InlineKeyboardBuilder()
     for dep_index, dep in enumerate(deps):
-        builder.button(text=dep, callback_data=f'titles_{agency}_{dep_index}_1')
+        builder.button(text=dep, callback_data=f'titles_{agency}_{dep_index}_0')
     builder.adjust(2)
 
     try:
@@ -62,19 +63,19 @@ async def departments_kb(callback: CallbackQuery):
 async def titles_kb(callback: CallbackQuery):
     agency = callback.data.split('_')[1]
     dep_index = int(callback.data.split('_')[2])
-    page_offset = int(callback.data.split('_')[3]) * 5      # this * 5 can customize the amount
-                                                            # of titles on one page
-    titles = parse_titles(agency, dep_index)
+    page_offset = int(callback.data.split('_')[3]) * NEWS_PER_PAGE
+
+    titles = parse_titles(agency, dep_index, NEWS_PER_PAGE + 1, page_offset)
 
     builder = InlineKeyboardBuilder()
-    for title in titles[page_offset-5:page_offset]:
+    for title in titles[:NEWS_PER_PAGE]:
         builder.button(text=title[1], callback_data=f'fetch_{agency}_{title[0]}')
-    if page_offset < len(titles):
+    if NEWS_PER_PAGE < len(titles):
         builder.button(text='следующая страница',
-                    callback_data=f'titles_{agency}_{dep_index}_{(page_offset // 5) + 1}') #if you're customizing
-    if page_offset - 5 > 0:                                       #the amount of titles on one page, make sure to
-        builder.button(text='предыдущая страница',                #change the respective numbers here too
-                       callback_data=f'titles_{agency}_{dep_index}_{(page_offset // 5) - 1}')
+                    callback_data=f'titles_{agency}_{dep_index}_{(page_offset // NEWS_PER_PAGE) + 1}')
+    if page_offset > 0:
+        builder.button(text='предыдущая страница',
+                       callback_data=f'titles_{agency}_{dep_index}_{(page_offset // NEWS_PER_PAGE) - 1}')
     builder.adjust(1)                                            
 
     try:

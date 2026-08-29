@@ -39,13 +39,13 @@ def parse_departments(agency):
         
 
 # FETCHING TITLES FROM DB
-def parse_titles(agency, number):
+def parse_titles(agency, number, limit, offset):
     department = getattr(feeds, f'url_{agency}_{number}')[0]
     with connection.cursor() as cursor:
         query = """
-            SELECT id, title FROM news WHERE agency = %s AND department = %s ORDER BY pub_date DESC
+            SELECT id, title FROM news WHERE agency = %s AND department = %s ORDER BY pub_date DESC LIMIT %s OFFSET %s
         """
-        cursor.execute(query, (agency, department))
+        cursor.execute(query, (agency, department, limit, offset))
 
         titles = cursor.fetchall()
         return titles
