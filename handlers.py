@@ -14,10 +14,32 @@ user = Router()
 @user.message(CommandStart())
 async def cmd_start(message: Message):
     await message.answer(f'привет! это тестовая версия моего бота-новостника\n'
-                         'если вы из приемной комиссии МАИ, можете написать мне! @sbeu_bulka\n'
                          'чтобы начать, используй кнопку "Читать новости"',
                          reply_markup=kb.mainmenu)
 
+
+# LAST 10 ARTICLES
+@user.message(F.text.lower() == 'последние 10')
+async def last_10(message: Message):
+    feed = parse_latest()
+    answer_text_pieces = []
+
+    builder = InlineKeyboardBuilder()
+    for index, item in enumerate(feed):
+        answer_text_pieces.append(
+            f'{index + 1}. {item[3].upper()}, {item[4]}\n\n'
+            f'{item[1]}\n'
+            f'{item[2]}\n\n\n'
+        )
+        builder.button(text=str(index + 1), callback_data=f'fetch_{item[3]}_{item[0]}')
+    answer_text = ''.join(answer_text_pieces)
+    builder.adjust(5)
+
+    await message.answer(
+        text=answer_text,
+        reply_markup=builder.as_markup()
+    )
+    
 
 # CHOOSING NEWS AGENCY
 @user.message(F.text.lower() == 'читать новости')

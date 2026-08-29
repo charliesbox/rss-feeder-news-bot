@@ -13,6 +13,18 @@ connection = psycopg.connect(
 )
 
 
+# PARSING LAST 10 ARTICLES
+def parse_latest():
+    with connection.cursor() as cursor:
+        parse_latest_query = """
+            SELECT id, title, description, agency, department FROM news ORDER BY pub_date DESC LIMIT 10
+        """
+        cursor.execute(parse_latest_query, ())
+
+        latest_10 = cursor.fetchall()
+        return latest_10
+
+    
 # PARSING AGENCY NAMES FROM FEEDS.PY
 def parse_agencies():
     agencies = []
