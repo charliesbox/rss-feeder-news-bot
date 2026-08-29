@@ -44,7 +44,7 @@ async def departments_kb(callback: CallbackQuery):
 
     builder = InlineKeyboardBuilder()
     for dep_index, dep in enumerate(deps):
-        builder.button(text=dep, callback_data=f'titles_{agency}_{dep_index}_0')
+        builder.button(text=dep, callback_data=f'titles_{agency}_{dep_index}_1')
     builder.adjust(2)
 
     try:
@@ -63,7 +63,8 @@ async def departments_kb(callback: CallbackQuery):
 async def titles_kb(callback: CallbackQuery):
     agency = callback.data.split('_')[1]
     dep_index = int(callback.data.split('_')[2])
-    page_offset = int(callback.data.split('_')[3]) * NEWS_PER_PAGE
+    current_page = int(callback.data.split('_')[3])
+    page_offset = (current_page - 1) * NEWS_PER_PAGE
 
     titles = parse_titles(agency, dep_index, NEWS_PER_PAGE + 1, page_offset)
 
@@ -72,11 +73,11 @@ async def titles_kb(callback: CallbackQuery):
         builder.button(text=title[1], callback_data=f'fetch_{agency}_{title[0]}')
     if NEWS_PER_PAGE < len(titles):
         builder.button(text='следующая страница',
-                    callback_data=f'titles_{agency}_{dep_index}_{(page_offset // NEWS_PER_PAGE) + 1}')
+                    callback_data=f'titles_{agency}_{dep_index}_{current_page + 1}')
     if page_offset > 0:
         builder.button(text='предыдущая страница',
-                       callback_data=f'titles_{agency}_{dep_index}_{(page_offset // NEWS_PER_PAGE) - 1}')
-    builder.adjust(1)                                            
+                       callback_data=f'titles_{agency}_{dep_index}_{current_page - 1}')
+    builder.adjust(1)
 
     try:
         await callback.message.edit_text(
