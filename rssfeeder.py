@@ -1,12 +1,14 @@
-import asyncio, psycopg, feeds
+import asyncio, psycopg, feeds, os
 from psycopg.rows import dict_row
+from dotenv import load_dotenv
 
+load_dotenv()
 
 connection = psycopg.connect(
     host = 'localhost',
     dbname = 'postgres',
     user = 'postgres',
-    password = 1234,
+    password = os.getenv('DB_PASSWORD'),
     port = 5432
 )
 

@@ -7,7 +7,7 @@ connection = psycopg.connect(
     host = 'localhost',
     dbname = 'postgres',
     user = 'postgres',
-    password = os.getenv('db_password'),
+    password = os.getenv('DB_PASSWORD'),
     port = 5432
 
 )
