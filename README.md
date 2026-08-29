@@ -15,6 +15,7 @@ Built with Python, aiogram 3, PostgreSQL, psycopg 3 and feedparser.
 - Fetches the latest articles from a local PostgreSQL database
 - Automatically updates the database every 30 minutes 
 - Easy to extend by adding new feeds to a single configuration file
+- Easy to customize with config.py
 
 ## How it works
 
@@ -85,6 +86,11 @@ BOT_TOKEN=your_telegram_bot_token
 PROXY_URL=http://your_proxy:port
 db_password=your_database_password
 ```
+
+### Setting config.py
+
+As for now, `config.py` only stores the amount of news titles on one page. You can change it to whatever you like.
+
 ### Setting a database
 
 The bot uses a local PostgreSQL database as a news storage. 
