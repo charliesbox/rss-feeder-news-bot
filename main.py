@@ -10,7 +10,7 @@ load_dotenv()
 
 async def update_database():
     while True:
-        await asyncio.to_thread(prepare_data())
+        await asyncio.to_thread(prepare_data)
         await asyncio.sleep(30 * 60)
 
 

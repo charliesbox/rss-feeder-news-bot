@@ -38,10 +38,10 @@ def prepare_data():
 
             newsfeed = feedparser.parse(url)
 
-            for index, item in enumerate(newsfeed.entries):
-                title = newsfeed.entries[index].title
-                description = newsfeed.entries[index].description
-                pub_date = newsfeed.entries[index].published
-                link = newsfeed.entries[index].link
+            for item in newsfeed.entries:
+                title = item.title
+                description = item.description
+                pub_date = item.published
+                link = item.link
 
                 save_data(agency, department, title, description, pub_date, link)
