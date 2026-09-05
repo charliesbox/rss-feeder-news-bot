@@ -58,9 +58,9 @@ def prepare_data():
             print(f'parsed {department}, entries: {len(newsfeed.entries)}\n')
 
             for item in newsfeed.entries:
-                title = item.title
-                description = item.description
-                pub_date = item.published
-                link = item.link
+                title = item.get('title')
+                description = item.get('description')
+                pub_date = item.get('published', 'pubDate')
+                link = item.get('link')
 
                 save_data(agency, department, title, description, pub_date, link)
