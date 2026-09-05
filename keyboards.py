@@ -4,7 +4,7 @@ from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
 mainmenu = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text='Читать новости')],
-        [KeyboardButton(text='последние 10')]
+        [KeyboardButton(text='последние новости')]
     ],
     resize_keyboard=True,
     input_field_placeholder='это все равно тест'

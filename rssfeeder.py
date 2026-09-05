@@ -14,15 +14,15 @@ connection = psycopg.connect(
 
 
 # PARSING LAST 10 ARTICLES
-def parse_latest():
+def parse_latest(offset):
     with connection.cursor() as cursor:
         parse_latest_query = """
-            SELECT id, title, description, agency, department FROM news ORDER BY pub_date DESC LIMIT 10
+            SELECT id, title, description, agency, department FROM news ORDER BY pub_date DESC LIMIT 11 OFFSET %s
         """
-        cursor.execute(parse_latest_query, ())
+        cursor.execute(parse_latest_query, (offset,))
 
         latest_10 = cursor.fetchall()
-        return latest_10
+    return latest_10
 
     
 # PARSING AGENCY NAMES FROM FEEDS.PY
@@ -60,14 +60,14 @@ def parse_titles(agency, number, limit, offset):
         cursor.execute(query, (agency, department, limit, offset))
 
         titles = cursor.fetchall()
-        return titles
+    return titles
 
 
 # FETCHING NEWS BY ITS ID FROM DB
-def fetch_news(agency, news_id):
+def fetch_news(news_id):
     with connection.cursor(row_factory=dict_row) as cursor:
         news_query = """
-            SELECT title, description, pub_date, url FROM news WHERE id = %s
+            SELECT agency, title, description, pub_date, url FROM news WHERE id = %s
         """
         cursor.execute(news_query, (news_id,))
 
@@ -78,7 +78,7 @@ def fetch_news(agency, news_id):
         f'{row['title']}\n\n'
         f'{row['description']}\n\n'
         f'Опубликовано: {row['pub_date']}\n'
-        f'Читать на {agency.upper()}: {row['url']}'
+        f'Читать на {row['agency'].upper()}: {row['url']}'
     )
 
     return newstext
