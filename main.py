@@ -9,8 +9,11 @@ load_dotenv()
 
 
 async def update_database():
+    print('DATABASE UPDATER STARTED')
     while True:
+        print('UPDATING DATABASE')
         await asyncio.to_thread(prepare_data)
+        print('DATABASE UPDATED')
         await asyncio.sleep(30 * 60)
 
 

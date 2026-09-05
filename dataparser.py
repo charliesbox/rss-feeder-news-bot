@@ -1,4 +1,4 @@
-import psycopg, feedparser, feeds, os
+import psycopg, feedparser, feeds, os, requests
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -9,8 +9,10 @@ connection = psycopg.connect(
     user = 'postgres',
     password = os.getenv('DB_PASSWORD'),
     port = 5432
-
 )
+
+proxy = os.getenv('PROXY_URL')
+
 
 def save_data(agency, department, title, description, pub_date, link):
     with connection.cursor() as cursor:
@@ -36,7 +38,24 @@ def prepare_data():
             agency = feed.split('_')[1]
             department, url = getattr(feeds, feed)
 
-            newsfeed = feedparser.parse(url)
+            print(f'parsing {agency} {department}')
+            print(f'url: {url}')
+
+            if proxy:
+                request = requests.get(
+                    url,
+                    proxies={
+                        'http': proxy,
+                        'https': proxy
+                    },
+                    timeout=30
+                )
+
+                newsfeed = feedparser.parse(request.content)
+            else:
+                newsfeed = feedparser.parse(url)
+
+            print(f'parsed {department}, entries: {len(newsfeed.entries)}\n')
 
             for item in newsfeed.entries:
                 title = item.title
